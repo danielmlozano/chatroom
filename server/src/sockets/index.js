@@ -36,7 +36,8 @@ const setSockets = async (io) => {
 			const user = await getUser(socketId)
 			io.to(chatRoomName).emit("newMessage", {
 				...JSON.parse(data),
-				user,
+				username: user,
+				timestamp: Date.now(),
 			})
 		})
 	})

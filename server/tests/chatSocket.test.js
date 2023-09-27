@@ -120,4 +120,53 @@ describe("setSockets", () => {
 
 		return socketPromise
 	})
+
+	test("User sends message", async () => {
+		const username = "testuser"
+
+		clientSocket.emit("join", JSON.stringify({ username }))
+
+		const clientSocketJoined = () =>
+			new Promise((resolve, reject) => {
+				clientSocket.on("joined", (data) => {
+					try {
+						resolve()
+					} catch (error) {
+						reject(error)
+					}
+				})
+			})
+
+		await clientSocketJoined()
+
+		const message = "Hello World"
+
+		const socketPromise = new Promise((resolve, reject) => {
+			clientSocket.on("newMessage", (data) => {
+				try {
+					const {
+						message: messageReceived,
+						username: usernameReceived,
+					} = data
+
+					expect(Object.keys(data)).toEqual([
+						"message",
+						"username",
+						"timestamp",
+					])
+
+					expect(messageReceived).toBe(message)
+					expect(usernameReceived).toBe(username)
+
+					resolve()
+				} catch (error) {
+					reject(error)
+				}
+			})
+		})
+
+		clientSocket.emit("messageSent", JSON.stringify({ message }))
+
+		return socketPromise
+	})
 })
