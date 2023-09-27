@@ -18,6 +18,9 @@ const io = new Server(server)
 mongoose.connect(process.env.MONGODB_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
+	authSource: "admin",
+	user: process.env.MONGODB_USER,
+	pass: process.env.MONGODB_PASSWORD,
 })
 
 app.use(cors())
