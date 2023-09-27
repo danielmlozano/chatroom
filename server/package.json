@@ -1,0 +1,32 @@
+{
+  "name": "chatroom-app-server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "chatroom",
+    "node",
+    "express",
+    "mongodb",
+    "socket.io"
+  ],
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.7",
+    "redis": "^4.6.10",
+    "socket.io": "^4.2.0"
+  },
+  "devDependencies": {
+    "jest": "^27.2.0",
+    "nodemon": "^2.0.12",
+    "redis-mock": "^0.56.3",
+    "socket.io-client": "^4.7.2",
+    "supertest": "^6.1.6"
+  }
+}
