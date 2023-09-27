@@ -1,4 +1,5 @@
 const usersService = require("../services/users.service")
+const messagesService = require("../services/messages.service")
 
 const setSockets = async (io) => {
 	const chatRoomName = "DefaultRoom"
@@ -34,8 +35,19 @@ const setSockets = async (io) => {
 
 		socket.on("messageSent", async (data) => {
 			const user = await getUser(socketId)
+
+			console.log(`sending message from ${user}`)
+
+			if (!user) {
+				return
+			}
+
+			const { message } = JSON.parse(data)
+
+			messagesService.createMessage(user, message)
+
 			io.to(chatRoomName).emit("newMessage", {
-				...JSON.parse(data),
+				message,
 				username: user,
 				timestamp: Date.now(),
 			})
