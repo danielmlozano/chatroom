@@ -1,41 +1,43 @@
-const useCache = require("../cache")
+const usersService = require("../services/users.service")
 
 const setSockets = async (io) => {
-	const cache = await useCache()
-
 	const chatRoomName = "DefaultRoom"
-
+	const { usernameInUse, setUser, removeUser, getUser } = await usersService
 	io.on("connection", (socket) => {
 		const socketId = socket.id
-
-		console.log(`Socket ${socketId} connected`)
 
 		socket.on("join", async (data) => {
 			const { username } = JSON.parse(data)
 
-			const usernameInUse = await cache.usernameInUse(username)
+			socket.join(chatRoomName)
 
-			if (usernameInUse) {
-				socket.emit("usernameTaken", `Username ${username} is taken`)
+			const isUsernameTaken = await usernameInUse(username)
+
+			if (isUsernameTaken) {
+				io.to(chatRoomName).emit(
+					"usernameTaken",
+					`Username ${username} is taken`,
+				)
 				return
 			}
 
-			socket.join(chatRoomName)
+			await setUser(username, socketId)
 
-			await cache.setUser(username, socketId)
+			const message = `Joined ${chatRoomName} as ${username}`
 
-			socket.emit("joined", `Joined chat as ${username}`)
+			io.to(chatRoomName).emit("joined", message)
 		})
 
 		socket.on("disconnect", async () => {
-			const userDisconnected = await cache.removeUser(socketId)
+			const userDisconnected = await removeUser(socketId)
 		})
 
 		socket.on("messageSent", async (data) => {
-			const user = await cache.getUser(socketId)
-			socket
-				.to(chatRoomName)
-				.emit("newMessage", { ...JSON.parse(data), user })
+			const user = await getUser(socketId)
+			io.to(chatRoomName).emit("newMessage", {
+				...JSON.parse(data),
+				user,
+			})
 		})
 	})
 }
