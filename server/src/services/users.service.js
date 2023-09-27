@@ -2,7 +2,7 @@ const client = require("../cache")
 
 const cacheName = "chat:usernames"
 
-await client.connect()
+client.connect()
 
 const usernameInUse = async (username) => {
 	const result = await client.hGet(cacheName, username)

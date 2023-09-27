@@ -1,5 +1,6 @@
 const io = require("socket.io")()
 const setSockets = require("../src/sockets")
+const { createMessage } = require("../src/services/messages.service")
 
 jest.mock("./../src/services/users.service", () => {
 	const cache = {}
@@ -33,6 +34,21 @@ jest.mock("./../src/services/users.service", () => {
 			)
 
 			return username || null
+		}),
+	}
+})
+
+jest.mock("./../src/services/messages.service", () => {
+	return {
+		createMessage: jest.fn(async (username, text) => {
+			return { username, message: text }
+		}),
+
+		getMessages: jest.fn(async () => {
+			return [
+				{ username: "testuser", message: "Hello World" },
+				{ username: "testuser", message: "Hello World 2" },
+			]
 		}),
 	}
 })
@@ -122,7 +138,7 @@ describe("setSockets", () => {
 	})
 
 	test("User sends message", async () => {
-		const username = "testuser"
+		const username = "user1"
 
 		clientSocket.emit("join", JSON.stringify({ username }))
 
@@ -157,6 +173,11 @@ describe("setSockets", () => {
 
 					expect(messageReceived).toBe(message)
 					expect(usernameReceived).toBe(username)
+
+					expect(createMessage).toHaveBeenCalledWith(
+						username,
+						message,
+					)
 
 					resolve()
 				} catch (error) {
