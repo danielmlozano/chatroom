@@ -9,6 +9,8 @@ services:
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: secret123
+        volumes:
+            - ./data/db:/data/db
 
     redis:
         image: redis:latest
