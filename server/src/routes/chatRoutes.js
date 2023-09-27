@@ -5,14 +5,14 @@ const chats = new ChatController()
 const setChatRoutes = (app) => {
 	const router = express.Router()
 
-	app.use("/api/chats", router)
+	app.use("/api/messages", router)
 
 	router.get("/", (req, res) => {
-		chats.getChats(req, res)
+		chats.index(req, res)
 	})
 
 	router.post("/", (req, res) => {
-		chats.createChat(req, res)
+		chats.store(req, res)
 	})
 }
 
