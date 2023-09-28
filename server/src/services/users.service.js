@@ -36,6 +36,15 @@ const getUser = async (socketId) => {
 	return username
 }
 
+const generateUsername = (username) => {
+	const randomDigits = Math.floor(Math.random() * 10000)
+	const newUsername = `${username}${randomDigits}`
+	if (usernameInUse(newUsername)) {
+		return generateUsername(newUsername)
+	}
+	return newUsername
+}
+
 // module.exports = usersService
 
 module.exports = {
@@ -43,4 +52,5 @@ module.exports = {
 	setUser,
 	removeUser,
 	getUser,
+	generateUsername,
 }

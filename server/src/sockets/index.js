@@ -3,7 +3,8 @@ const messagesService = require("../services/messages.service")
 
 const setSockets = async (io) => {
 	const chatRoomName = "DefaultRoom"
-	const { usernameInUse, setUser, removeUser, getUser } = await usersService
+	const { usernameInUse, setUser, removeUser, getUser, generateUsername } =
+		await usersService
 	io.on("connection", (socket) => {
 		const socketId = socket.id
 
@@ -15,9 +16,10 @@ const setSockets = async (io) => {
 			const isUsernameTaken = await usernameInUse(username)
 
 			if (isUsernameTaken) {
+				const newUserName = generateUsername(username)
 				io.to(chatRoomName).emit(
 					"usernameTaken",
-					`Username ${username} is taken`,
+					`The username ${username} is already taken. Trying with ${newUserName}`,
 				)
 				return
 			}

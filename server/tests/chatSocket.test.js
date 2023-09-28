@@ -35,6 +35,11 @@ jest.mock("./../src/services/users.service", () => {
 
 			return username || null
 		}),
+
+		generateUsername: jest.fn((username) => {
+			const randomDigits = Math.floor(Math.random() * 10000)
+			return `${username}${randomDigits}`
+		}),
 	}
 })
 
@@ -126,7 +131,10 @@ describe("setSockets", () => {
 		const socketPromise = new Promise((resolve, reject) => {
 			clientSocket2.on("usernameTaken", (data) => {
 				try {
-					expect(data).toBe(`Username ${username} is taken`)
+					expect(data).toMatch(
+						/^The username testuser is already taken. Trying with testuser\d{4}/,
+					)
+					expect(data).toS
 					resolve()
 				} catch (error) {
 					reject(error)
