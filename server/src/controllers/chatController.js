@@ -1,10 +1,72 @@
 const service = require("../services/messages.service")
 
+/**
+ * Groups chat messages by day and sorts them in chronological order.
+ *
+ * @param {Array} messages - An array of chat messages.
+ * @returns {Array} An array of objects, each containing a date and an array of messages for that date.
+ */
+const groupMessagesByDay = (messages) => {
+	if (!messages || !messages.length) return []
+	const today = new Date()
+	const yesterday = new Date(today)
+	yesterday.setDate(yesterday.getDate() - 1)
+
+	const groups = messages.reduce((acc, message) => {
+		const createdAt = new Date(message.createdAt)
+		let date
+
+		if (createdAt.toDateString() === today.toDateString()) {
+			date = "Today"
+		} else if (createdAt.toDateString() === yesterday.toDateString()) {
+			date = "Yesterday"
+		} else {
+			date = createdAt.toLocaleDateString("en-US", {
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+			})
+		}
+
+		acc[date] = acc[date] || []
+		acc[date].push(message)
+
+		return acc
+	}, {})
+
+	const sortedGroups = Object.entries(groups)
+		.sort(([a], [b]) => {
+			if (a === "Today") return 1
+			if (b === "Today") return -1
+			if (a === "Yesterday") return 1
+			if (b === "Yesterday") return -1
+			return new Date(a) > new Date(b)
+				? 1
+				: new Date(a) < new Date(b)
+				? -1
+				: 0
+		})
+		.reduce((acc, [key, value]) => {
+			acc[key] = value
+			return acc
+		}, {})
+
+	const result = Object.entries(sortedGroups).map(([key, value]) => ({
+		date: key,
+		messages: value.sort(
+			(a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+		),
+	}))
+
+	return result
+}
+
 class ChatController {
 	async index(req, res, next) {
 		try {
 			const messages = await service.getMessages()
-			res.status(200).json(messages)
+			const groupedMessages = groupMessagesByDay(messages)
+			res.status(200).json(groupedMessages)
 		} catch (err) {
 			next(err)
 		}
@@ -21,40 +83,6 @@ class ChatController {
 		await service.createMessage(username, message)
 		res.status(201).json({})
 	}
-
-	// async getChat(req, res, next) {
-	// 	try {
-	// 		const chat = await Chat.findById(req.params.id)
-	// 		if (!chat) {
-	// 			return res.status(404).json({ message: "Chat not found" })
-	// 		}
-	// 		res.status(200).json(chat)
-	// 	} catch (err) {
-	// 		next(err)
-	// 	}
-	// }
-
-	// async createChat(req, res, next) {
-	// 	try {
-	// 		const chat = new Chat(req.body)
-	// 		await chat.save()
-	// 		res.status(201).json(chat)
-	// 	} catch (err) {
-	// 		next(err)
-	// 	}
-	// }
-
-	// async deleteChat(req, res, next) {
-	// 	try {
-	// 		const chat = await Chat.findByIdAndDelete(req.params.id)
-	// 		if (!chat) {
-	// 			return res.status(404).json({ message: "Chat not found" })
-	// 		}
-	// 		res.status(200).json({ message: "Chat deleted successfully" })
-	// 	} catch (err) {
-	// 		next(err)
-	// 	}
-	// }
 }
 
 module.exports = ChatController

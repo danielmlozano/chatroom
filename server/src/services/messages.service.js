@@ -5,7 +5,7 @@ const createMessage = async (username, text) => {
 }
 
 const getMessages = async () => {
-	const messages = await Message.find()
+	const messages = await Message.find().sort({ createdAt: 1 })
 	return messages
 }
 
