@@ -30,6 +30,8 @@ const setSockets = async (io) => {
 
 			const message = `Joined ${chatRoomName} as ${username}`
 
+			console.log(message)
+
 			io.to(chatRoomName).emit("joined", message)
 		})
 
