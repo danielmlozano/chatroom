@@ -38,6 +38,8 @@ const getUser = async (socketId) => {
 
 const generateUsername = async (username) => {
 	const randomDigits = Math.floor(Math.random() * 10000)
+		.toString()
+		.padStart(4, "0")
 	const newUsername = `${username}${randomDigits}`
 
 	if (await usernameInUse(newUsername)) {
