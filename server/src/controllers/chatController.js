@@ -117,6 +117,22 @@ class ChatController {
 
 		res.json({ imageUrl })
 	}
+
+	async search(req, res) {
+		const query = req.query.query
+
+		if (!query) {
+			return res.status(400).json({ error: "Query is required." })
+		}
+
+		try {
+			const messages = await service.searchMessages(query)
+			res.status(200).json(messages)
+		} catch (err) {
+			console.error(err)
+			res.status(500).json({ message: "Internal server error" })
+		}
+	}
 }
 
 module.exports = ChatController

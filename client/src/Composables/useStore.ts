@@ -1,3 +1,4 @@
+import { IMessage } from "@/Interfaces"
 import { defineStore } from "pinia"
 import { io } from "socket.io-client"
 const URL = (import.meta as any).env.VITE_SOCKET_URL as string
@@ -18,6 +19,8 @@ const useStore = defineStore("main", {
 		socket: io(URL, {
 			autoConnect: false,
 		}),
+		searchResults: [] as IMessage[],
+		searchQuery: "",
 	}),
 	actions: {
 		setUser(user: IUser) {
@@ -39,6 +42,16 @@ const useStore = defineStore("main", {
 		},
 		addConnectedUser(user: IUser) {
 			this.connectedUsers.push(user)
+		},
+		setSearchResults(results: IMessage[]) {
+			this.searchResults = results
+		},
+		setSearchNoResults() {
+			this.searchResults = []
+		},
+		clearSearchResults() {
+			this.searchResults = []
+			this.searchQuery = ""
 		},
 	},
 })

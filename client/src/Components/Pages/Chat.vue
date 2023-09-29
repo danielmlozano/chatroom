@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { onMounted, ref, nextTick } from "vue"
+	import { onMounted, ref, nextTick, computed } from "vue"
 	import { storeToRefs } from "pinia"
 	import useStore from "@Composables/useStore"
 	import { apiFetch } from "@Composables/useForm"
@@ -7,14 +7,20 @@
 	import ChatBubble from "@Components/ChatBubble.vue"
 	import { IMessage, IMessageGroup } from "@/Interfaces"
 	import UploadImage from "@Components/UploadImage.vue"
+	import SearchMessage from "@Components/SearchMessage.vue"
+	import SearchResults from "@Components/SearchResults.vue"
 
 	const store = useStore()
 
-	const { user, connectedUsers } = storeToRefs(store)
+	const { user, connectedUsers, searchResults } = storeToRefs(store)
 
 	const message = ref<string>("")
 
 	const messages = ref<IMessageGroup[]>([])
+
+	const showSearchResultsNavigator = computed<boolean>(() => {
+		return searchResults.value.length > 0
+	})
 
 	const sendMessage = () => {
 		if (!message.value) {
@@ -88,6 +94,29 @@
 				fileUrl: newMessage.fileUrl,
 				username: newMessage.username,
 			} as IMessage)
+		scrollToBottom()
+	}
+
+	const scrollToMessage = (message: IMessage) => {
+		const messageId = message._id as string
+		const elMessage = document.getElementById(messageId)
+		if (elMessage !== null) {
+			const previousResult =
+				document.getElementsByClassName("bg-yellow-100")
+			if (previousResult.length > 0) {
+				previousResult[0].classList.remove("bg-yellow-100")
+			}
+			elMessage.scrollIntoView({ behavior: "smooth" })
+			elMessage.classList.add("bg-yellow-100")
+		}
+	}
+
+	const clearSearch = () => {
+		store.clearSearchResults()
+		const elMessage = document.getElementsByClassName("bg-yellow-100")
+		if (elMessage.length > 0) {
+			elMessage[0].classList.remove("bg-yellow-100")
+		}
 		scrollToBottom()
 	}
 
@@ -177,6 +206,8 @@
 					Welcome
 					<span class="text-blue-500">{{ user.username }}</span>
 				</p>
+				<!-- Search -->
+				<SearchMessage />
 				<div class="users mt-4">
 					<!-- List of connected users -->
 					<span class="text-white font-medium">Users online</span>
@@ -205,6 +236,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div
 			class="w-full bg-white md:w-4/6 lg:w-5/6 pl-10 flex flex-col h-screen"
 		>
@@ -233,10 +265,19 @@
 					</svg>
 				</button>
 			</div>
+
+			<!-- Chat Viewport -->
 			<div
 				class="flex-col max-h-full grow overflow-y-scroll mx-5"
 				id="chat"
 			>
+				<!-- Search results navigator (like messenger or whatsapp: message 1 of 3)-->
+				<SearchResults
+					v-if="showSearchResultsNavigator"
+					@go-to="scrollToMessage"
+					@clear="clearSearch"
+					class="fixed top bg-gray-100 p-5 rounded-md left-auto right-auto"
+				/>
 				<div
 					v-for="(group, i) in messages"
 					:key="i"
@@ -250,7 +291,8 @@
 					<div
 						v-for="(message, i) in group.messages"
 						:key="i"
-						class="flex mb-2 w-full py-5"
+						class="flex mb-2 w-full py-5 message-item"
+						:id="message._id"
 					>
 						<ChatBubble :message="message" />
 					</div>
