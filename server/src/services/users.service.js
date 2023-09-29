@@ -13,7 +13,7 @@ const usernameInUse = async (username) => {
 
 const setUser = async (username, socketId) => {
 	const result = await client.hSet(cacheName, username, socketId)
-	console.log({ result })
+
 	return result
 }
 

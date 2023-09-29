@@ -1,7 +1,12 @@
 const Message = require("../models/message")
 
-const createMessage = async (username, text) => {
-	return await Message.create({ username, message: text })
+const createMessage = async (username, text, file = null) => {
+	return await Message.create({
+		username,
+		message: text,
+		fileUrl: file,
+		fileMimeType: "image",
+	})
 }
 
 const getMessages = async () => {

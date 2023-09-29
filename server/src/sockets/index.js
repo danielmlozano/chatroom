@@ -56,14 +56,15 @@ const setSockets = async (io) => {
 				return
 			}
 
-			const { message } = JSON.parse(data)
-			console.log(`Message received from ${user}: ${message}`)
-			messagesService.createMessage(user, message)
+			const { message, image = null } = JSON.parse(data)
+
+			messagesService.createMessage(user, message, image)
 
 			io.to(chatRoomName).emit("newMessage", {
 				message,
 				username: user,
-				timestamp: Date.now(),
+				fileUrl: image,
+				createdAt: Date.now(),
 			})
 		})
 	})
