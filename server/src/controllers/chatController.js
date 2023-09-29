@@ -62,17 +62,18 @@ const groupMessagesByDay = (messages) => {
 }
 
 class ChatController {
-	async index(req, res, next) {
+	async index(req, res) {
 		try {
 			const messages = await service.getMessages()
 			const groupedMessages = groupMessagesByDay(messages)
 			res.status(200).json(groupedMessages)
 		} catch (err) {
-			next(err)
+			console.error(err)
+			res.status(500).json({ message: "Internal server error" })
 		}
 	}
 
-	async store(req, res, next) {
+	async store(req, res) {
 		const { username, message } = req.body
 		if (!username || !message) {
 			return res.status(400).json({

@@ -30,9 +30,15 @@ const setSockets = async (io) => {
 
 			const message = `Joined ${chatRoomName} as ${username}`
 
-			console.log(message)
-
 			io.to(chatRoomName).emit("joined", message)
+			io.to(chatRoomName).emit("userJoined", {
+				username,
+				socketId,
+			})
+		})
+
+		socket.on("disconnecting", async () => {
+			io.to(chatRoomName).emit("userDisconnected", socketId)
 		})
 
 		socket.on("disconnect", async () => {

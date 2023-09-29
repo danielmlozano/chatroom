@@ -4,7 +4,8 @@ const URL = (import.meta as any).env.VITE_SOCKET_URL as string
 
 interface IUser {
 	username: string
-	connected: boolean
+	connected?: boolean
+	socketId?: string
 }
 
 const useStore = defineStore("main", {
@@ -13,6 +14,7 @@ const useStore = defineStore("main", {
 			username: "",
 			connected: false,
 		} as IUser,
+		connectedUsers: [] as IUser[],
 		socket: io(URL, {
 			autoConnect: false,
 		}),
@@ -26,6 +28,17 @@ const useStore = defineStore("main", {
 		},
 		setConnected(connected: boolean) {
 			this.user.connected = connected
+		},
+		setConnectedUsers(users: IUser[]) {
+			this.connectedUsers = users
+		},
+		disconnectUser(socketId: string) {
+			this.connectedUsers = this.connectedUsers.filter(
+				(user) => user.socketId !== socketId,
+			)
+		},
+		addConnectedUser(user: IUser) {
+			this.connectedUsers.push(user)
 		},
 	},
 })
