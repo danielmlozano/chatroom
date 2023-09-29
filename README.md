@@ -27,6 +27,10 @@ To run the application on a local environment, follow these steps:
 6. Start the server on a terminal: `cd ../server && yarn dev`
 7. On another terminal start the client: `cd ../client && yarn dev`
 
+## Testing
+
+In this version, only the server side has automated tests. Run `cd server && yarn test`to execute them.
+
 ## GraphQL
 
 A Graphql version of the app is in the `graphql` branch.
