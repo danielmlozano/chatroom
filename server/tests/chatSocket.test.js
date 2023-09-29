@@ -131,7 +131,9 @@ describe("setSockets", () => {
 		const socketPromise = new Promise((resolve, reject) => {
 			clientSocket2.on("usernameTaken", (data) => {
 				try {
-					expect(data).toMatch(
+					const { message, newUserName } = data
+					expect(newUserName).toMatch(/^testuser\d{4}$/)
+					expect(message).toMatch(
 						/^The username testuser is already taken. Trying with testuser\d{4}/,
 					)
 					expect(data).toS
