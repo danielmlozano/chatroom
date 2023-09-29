@@ -17,28 +17,13 @@
 
 		socket.emit("messageSent", JSON.stringify({ message: message.value }))
 
-		// Push the message to the message group of Today to the array
-		const todayGroup = messages.value.find(
-			(group) => group.date === "Today",
-		)
+		const NewMessage = {
+			message: message.value,
+			username: user.username,
+		} as IMessage
 
-		if (!todayGroup) {
-			messages.value.push({
-				date: "Today",
-				messages: [],
-			})
-		}
-
-		messages.value
-			.find((group) => group.date === "Today")
-			?.messages.push({
-				message: message.value,
-				username: user.username,
-			} as IMessage)
-
+		pushMessage(NewMessage)
 		message.value = ""
-
-		scrollToBottom()
 	}
 
 	const messages = ref<IMessageGroup[]>([])
@@ -57,8 +42,34 @@
 		}
 	}
 
+	const pushMessage = (newMessage: IMessage) => {
+		// Push the message to the message group of Today to the array
+		const todayGroup = messages.value.find(
+			(group) => group.date === "Today",
+		)
+
+		if (!todayGroup) {
+			messages.value.push({
+				date: "Today",
+				messages: [],
+			})
+		}
+
+		messages.value
+			.find((group) => group.date === "Today")
+			?.messages.push({
+				message: newMessage.message,
+				username: newMessage.username,
+			} as IMessage)
+		scrollToBottom()
+	}
+
 	onMounted(() => {
 		fetchChatHistory()
+		socket.on("newMessage", (data) => {
+			const message: IMessage = data
+			pushMessage(message)
+		})
 	})
 </script>
 <template>
@@ -91,7 +102,7 @@
 			</div>
 
 			<div
-				class="flex-none w-full pr-10 self-end flex-shrink-0 flex-grow-0"
+				class="flex-none w-full pr-10 self-end flex-shrink-0 flex-grow-0 mb-4"
 			>
 				<form class="flex mt-4 w-full" @submit.prevent="sendMessage">
 					<TextInput
