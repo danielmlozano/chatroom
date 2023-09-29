@@ -13,26 +13,30 @@ const setSockets = async (io) => {
 		socket.on("join", async (data) => {
 			const { username } = JSON.parse(data)
 
+			let finalUsername = username
+
 			socket.join(chatRoomName)
 
 			const isUsernameTaken = await usernameInUse(username)
 
 			if (isUsernameTaken) {
 				const newUserName = await generateUsername(username)
-				socket.emit(
-					"usernameTaken",
-					`The username ${username} is already taken. Trying with ${newUserName}`,
-				)
-				return
+				socket.emit("usernameTaken", {
+					message: `The username ${username} is already taken. Trying with ${newUserName}`,
+					newUserName,
+				})
+				// Wait 3 seconds before joining the room
+				finalUsername = newUserName
+				await new Promise((resolve) => setTimeout(resolve, 3000))
 			}
 
-			await setUser(username, socketId)
+			await setUser(finalUsername, socketId)
 
-			const message = `Joined ${chatRoomName} as ${username}`
+			const message = `Joined ${chatRoomName} as ${finalUsername}`
 
 			io.to(chatRoomName).emit("joined", message)
 			io.to(chatRoomName).emit("userJoined", {
-				username,
+				username: finalUsername,
 				socketId,
 			})
 		})

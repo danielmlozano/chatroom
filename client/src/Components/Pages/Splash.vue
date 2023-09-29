@@ -6,6 +6,8 @@
 
 	const username = ref("daniel")
 
+	const usernameTaken = ref<string>("")
+
 	const canJoin = computed<boolean>(() => {
 		return !!username.value
 	})
@@ -23,6 +25,11 @@
 			connected: true,
 		})
 	})
+
+	socket.on("usernameTaken", ({ message, newUserName }) => {
+		usernameTaken.value = message
+		username.value = newUserName
+	})
 </script>
 <template>
 	<div class="h-screen flex">
@@ -39,7 +46,7 @@
 				<h1 class="text-xl text-gray-100">
 					Please enter your username to continue
 				</h1>
-				<div class="flex mt-4">
+				<div class="flex-col mt-4">
 					<form class="flex mt-4 w-full" @submit.prevent="joinChat">
 						<TextInput
 							v-model="username"
@@ -50,6 +57,12 @@
 							Join
 						</PrimaryButton>
 					</form>
+					<!-- Username already taken notice -->
+					<div class="mt-2" v-if="usernameTaken">
+						<span class="text-red-500 text-sm">
+							{{ usernameTaken }}
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
