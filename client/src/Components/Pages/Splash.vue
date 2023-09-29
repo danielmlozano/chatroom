@@ -17,9 +17,32 @@
 	const { socket, setUser } = useStore()
 
 	const joinChat = async (): Promise<void> => {
-		console.log("Joining chat")
+		if (!validateUsername()) {
+			return
+		}
+		usernameTaken.value = ""
 		await socket.connect()
 		socket.emit("join", JSON.stringify({ username: username.value }))
+	}
+
+	const validateUsername = (): boolean => {
+		if (username.value.length < 3) {
+			usernameTaken.value = "Username must be at least 3 characters"
+			return false
+		}
+
+		if (username.value.length > 15) {
+			usernameTaken.value = "Username must be less than 15 characters"
+			return false
+		}
+
+		// only allow alphanumeric characters and no spaces
+		if (!/^[a-zA-Z0-9]+$/.test(username.value)) {
+			usernameTaken.value =
+				"Username must only contain alphanumeric characters and no spaces"
+			return false
+		}
+		return true
 	}
 
 	socket.on("joined", () => {
