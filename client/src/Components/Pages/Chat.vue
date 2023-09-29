@@ -6,6 +6,7 @@
 	import { PrimaryButton, TextInput } from "@Forms"
 	import ChatBubble from "@Components/ChatBubble.vue"
 	import { IMessage, IMessageGroup } from "@/Interfaces"
+	import UploadImage from "@Components/UploadImage.vue"
 
 	const store = useStore()
 
@@ -25,12 +26,27 @@
 			JSON.stringify({ message: message.value }),
 		)
 
-		const NewMessage = {
+		const newMessage = {
 			message: message.value,
 			username: user.value.username,
 		} as IMessage
 
-		pushMessage(NewMessage)
+		pushMessage(newMessage)
+		message.value = ""
+	}
+
+	const sentImageMessage = (imageUrl: string) => {
+		store.socket.emit(
+			"messageSent",
+			JSON.stringify({ image: imageUrl, message: "" }),
+		)
+
+		const newMessage = {
+			fileUrl: imageUrl,
+			message: "",
+			username: user.value.username,
+		} as IMessage
+
 		message.value = ""
 	}
 
@@ -70,6 +86,7 @@
 			.find((group) => group.date === "Today")
 			?.messages.push({
 				message: newMessage.message,
+				fileUrl: newMessage.fileUrl,
 				username: newMessage.username,
 			} as IMessage)
 		scrollToBottom()
@@ -80,6 +97,7 @@
 		fetchUsers()
 		store.socket.on("newMessage", (data) => {
 			const message: IMessage = data
+
 			pushMessage(message)
 		})
 
@@ -157,6 +175,7 @@
 						class="placeholder-gray-500"
 						@key-enter="sendMessage"
 					/>
+					<UploadImage @uploaded="sentImageMessage" />
 					<PrimaryButton :disabled="!message" type="submit"
 						>Send</PrimaryButton
 					>

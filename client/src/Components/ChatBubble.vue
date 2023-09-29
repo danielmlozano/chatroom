@@ -45,7 +45,12 @@
 				}}</span>
 			</div>
 			<div class="bg-gray-100 rounded-lg p-2">
-				<p class="text-sm text-gray-800">
+				<img
+					v-if="message.fileUrl"
+					:src="message.fileUrl"
+					class="max-w-3xl"
+				/>
+				<p class="text-sm text-gray-800" v-else>
 					{{ message.message }}
 				</p>
 			</div>
@@ -58,7 +63,12 @@
 	<template v-else>
 		<div class="flex flex-col w-full items-end space-y-1">
 			<div class="bg-blue-500 rounded-lg p-2">
-				<p class="text-sm text-white">
+				<img
+					v-if="message.fileUrl"
+					:src="message.fileUrl"
+					class="max-w-3xl"
+				/>
+				<p class="text-sm text-white" v-else>
 					{{ message.message }}
 				</p>
 			</div>

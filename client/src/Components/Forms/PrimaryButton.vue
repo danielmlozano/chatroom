@@ -14,7 +14,7 @@
 		<slot />
 	</button>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 	button {
 		background-color: #2255ff !important;
 	}
