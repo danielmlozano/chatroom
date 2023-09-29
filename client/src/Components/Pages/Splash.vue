@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref, computed, onMounted } from "vue"
+	import { ref, computed } from "vue"
 	import useStore from "@Composables/useStore"
 	import SplashIcon from "@Components/Icons/SplashIcon.vue"
 	import { PrimaryButton, TextInput } from "@Forms"
@@ -16,7 +16,17 @@
 
 	const { socket, setUser } = useStore()
 
+	const joining = ref<boolean>(false)
+
+	const buttonText = computed<string>(() => {
+		if (joining.value) {
+			return "Joining..."
+		}
+		return "Join"
+	})
+
 	const joinChat = async (): Promise<void> => {
+		joining.value = true
 		if (!validateUsername()) {
 			return
 		}
@@ -75,8 +85,11 @@
 				<div class="flex-col mt-4">
 					<form class="flex mt-4 w-full" @submit.prevent="joinChat">
 						<TextInput v-model="username" placeholder="Username" />
-						<PrimaryButton :disabled="!canJoin" type="submit">
-							Join
+						<PrimaryButton
+							:disabled="!canJoin || joining"
+							type="submit"
+						>
+							{{ buttonText }}
 						</PrimaryButton>
 					</form>
 					<!-- Username already taken notice -->
