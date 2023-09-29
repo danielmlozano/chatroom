@@ -48,7 +48,7 @@
 			}
 
 			const data = await response.json()
-			// imageUrl.value = data.imageUrl
+
 			emit("uploaded", data.imageUrl)
 		} catch (error) {
 			console.error(error)

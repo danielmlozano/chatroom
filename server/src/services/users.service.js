@@ -59,8 +59,6 @@ const generateUsername = async (username) => {
 	return newUsername
 }
 
-// module.exports = usersService
-
 module.exports = {
 	usernameInUse,
 	setUser,
