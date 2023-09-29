@@ -16,10 +16,4 @@ const setChatRoutes = (app) => {
 	})
 }
 
-// router.get("/:id", ChatController.getChat)
-
-// router.post("/", ChatController.createChat)
-
-// router.delete("/:id", ChatController.deleteChat)
-
 module.exports = setChatRoutes

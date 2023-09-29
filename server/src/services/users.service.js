@@ -38,6 +38,12 @@ const getUser = async (socketId) => {
 	return username
 }
 
+const getUsers = async () => {
+	const users = await client.hGetAll(cacheName)
+
+	return users
+}
+
 const generateUsername = async (username) => {
 	const randomDigits = Math.floor(Math.random() * 10000)
 		.toString()
@@ -58,4 +64,5 @@ module.exports = {
 	removeUser,
 	getUser,
 	generateUsername,
+	getUsers,
 }

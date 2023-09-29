@@ -6,6 +6,7 @@ const dotenv = require("dotenv")
 
 const { Server } = require("socket.io")
 const setChatRoutes = require("./src/routes/chatRoutes")
+const setUserRoutes = require("./src/routes/userRoutes")
 const setSockets = require("./src/sockets")
 
 dotenv.config()
@@ -31,6 +32,7 @@ app.use(cors())
 app.use(express.json())
 
 setChatRoutes(app)
+setUserRoutes(app)
 setSockets(io)
 
 const port = process.env.PORT || 3000
