@@ -42,14 +42,12 @@ const setSockets = async (io) => {
 		socket.on("messageSent", async (data) => {
 			const user = await getUser(socketId)
 
-			console.log(`sending message from ${user}`)
-
 			if (!user) {
 				return
 			}
 
 			const { message } = JSON.parse(data)
-
+			console.log(`Message received from ${user}: ${message}`)
 			messagesService.createMessage(user, message)
 
 			io.to(chatRoomName).emit("newMessage", {

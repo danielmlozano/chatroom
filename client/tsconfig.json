@@ -12,6 +12,7 @@
 		"resolveJsonModule": true,
 		"baseUrl": ".",
 		"paths": {
+			"@/*": ["./src/*"],
 			"@Components/*": ["./src/Components/*"],
 			"@Forms/*": ["./src/Components/Forms/*"],
 			"@Forms": ["./src/Components/Forms"],
