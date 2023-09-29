@@ -4,6 +4,8 @@ const cacheName = "chat:usernames"
 
 client.connect()
 
+client.del(cacheName)
+
 const usernameInUse = async (username) => {
 	const result = await client.hGet(cacheName, username)
 	return result
