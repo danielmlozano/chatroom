@@ -25,6 +25,6 @@ To run the application on a local environment, follow these steps:
 4. Install the dependencies for the client: `cd ../client && yarn install`
 5. Run `cp .env.example .env` to create a copy of the env file for the client and adjust the settings in this file according to your environment.
 6. Start the server on a terminal: `cd ../server && yarn dev`
-7. On another terminal start the client: `cd ../client && yar dev`
+7. On another terminal start the client: `cd ../client && yarn dev`
 
 **Happy coding!**
