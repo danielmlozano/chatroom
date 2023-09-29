@@ -1,7 +1,9 @@
 <script setup lang="ts">
-	import { onMounted, ref, nextTick } from "vue"
+	import { onMounted, ref, nextTick, watch } from "vue"
 	import { storeToRefs } from "pinia"
 	import useStore from "@Composables/useStore"
+	import gql from "graphql-tag"
+	import { useQuery } from "@vue/apollo-composable"
 	import { apiFetch } from "@Composables/useForm"
 	import { PrimaryButton, TextInput } from "@Forms"
 	import ChatBubble from "@Components/ChatBubble.vue"
@@ -60,6 +62,31 @@
 		store.setConnectedUsers(response)
 	}
 
+	const { result } = useQuery(
+		gql`
+			query Data {
+				messages {
+					date
+					messages {
+						_id
+						username
+						message
+						fileUrl
+					}
+				}
+				users {
+					username
+					tokenId
+				}
+			}
+		`,
+	)
+
+	watch(result, (value) => {
+		store.setConnectedUsers([...value.users])
+		messages.value = [...value.messages]
+	})
+
 	const scrollToBottom = async () => {
 		await nextTick()
 		const chat = document.getElementById("chat")
@@ -92,8 +119,6 @@
 	}
 
 	onMounted(() => {
-		fetchChatHistory()
-		fetchUsers()
 		store.socket.on("newMessage", (data) => {
 			const message: IMessage = data
 
