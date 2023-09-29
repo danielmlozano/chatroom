@@ -13,6 +13,22 @@
 	const isIncomingMessage = (message: IMessage): boolean => {
 		return message.username !== user.username
 	}
+
+	const friendlyDate = (date: string): string => {
+		const dateObject = new Date(date)
+		const today = new Date()
+
+		const isToday =
+			dateObject.getDate() === today.getDate() &&
+			dateObject.getMonth() === today.getMonth() &&
+			dateObject.getFullYear() === today.getFullYear()
+
+		const options = isToday
+			? { hour: "numeric", minute: "numeric" }
+			: { year: "numeric", month: "short", day: "numeric" }
+
+		return dateObject.toLocaleString("en-US", options)
+	}
 </script>
 <template>
 	<template v-if="isIncomingMessage(message)">
@@ -32,6 +48,10 @@
 				<p class="text-sm text-gray-800">
 					{{ message.message }}
 				</p>
+			</div>
+
+			<div class="text-xs text-gray-500">
+				{{ friendlyDate(message.createdAt) }}
 			</div>
 		</div>
 	</template>

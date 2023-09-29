@@ -87,9 +87,9 @@
 					class="flex flex-col mb-4"
 				>
 					<div class="flex flex-col mb-2">
-						<span class="font-bold text-gray-800">{{
-							group.date
-						}}</span>
+						<span class="font-semibold text-gray-800 text-center">
+							{{ group.date }}
+						</span>
 					</div>
 					<div
 						v-for="(message, i) in group.messages"
