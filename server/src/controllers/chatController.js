@@ -1,6 +1,8 @@
 const service = require("../services/messages.service")
 const path = require("path")
 const fs = require("fs")
+const dotenv = require("dotenv")
+dotenv.config()
 
 /**
  * Groups chat messages by day and sorts them in chronological order.
