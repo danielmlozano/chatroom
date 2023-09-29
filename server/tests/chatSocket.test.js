@@ -45,8 +45,8 @@ jest.mock("./../src/services/users.service", () => {
 
 jest.mock("./../src/services/messages.service", () => {
 	return {
-		createMessage: jest.fn(async (username, text) => {
-			return { username, message: text }
+		createMessage: jest.fn(async (username, text, file = null) => {
+			return { username, message: text, fileUrl: file }
 		}),
 
 		getMessages: jest.fn(async () => {
@@ -178,7 +178,8 @@ describe("setSockets", () => {
 					expect(Object.keys(data)).toEqual([
 						"message",
 						"username",
-						"timestamp",
+						"fileUrl",
+						"createdAt",
 					])
 
 					expect(messageReceived).toBe(message)
@@ -187,6 +188,7 @@ describe("setSockets", () => {
 					expect(createMessage).toHaveBeenCalledWith(
 						username,
 						message,
+						null,
 					)
 
 					resolve()
