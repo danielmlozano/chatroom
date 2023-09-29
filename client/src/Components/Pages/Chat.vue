@@ -9,6 +9,7 @@
 	import ChatBubble from "@Components/ChatBubble.vue"
 	import { IMessage, IMessageGroup } from "@/Interfaces"
 	import UploadImage from "@Components/UploadImage.vue"
+	import { cloneDeep } from "lodash"
 
 	const store = useStore()
 
@@ -83,8 +84,8 @@
 	)
 
 	watch(result, (value) => {
-		store.setConnectedUsers([...value.users])
-		messages.value = [...value.messages]
+		store.setConnectedUsers(cloneDeep(value.users))
+		messages.value = cloneDeep(value.messages)
 	})
 
 	const scrollToBottom = async () => {
