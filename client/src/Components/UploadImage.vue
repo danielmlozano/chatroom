@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref, defineEmits } from "vue"
+	import { ref } from "vue"
 	import ImageIcon from "@Components/Icons/ImageIcon.vue"
 	import useStore from "@Composables/useStore"
 

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-	import { defineEmits } from "vue"
-
 	interface IProps {
 		disabled?: boolean
 		modelValue: any
