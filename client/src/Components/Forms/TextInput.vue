@@ -3,7 +3,7 @@
 
 	interface IProps {
 		disabled?: boolean
-		modelValue: string
+		modelValue: any
 		placeholder?: string
 	}
 

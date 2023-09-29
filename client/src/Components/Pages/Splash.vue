@@ -4,7 +4,7 @@
 	import SplashIcon from "@Components/Icons/SplashIcon.vue"
 	import { PrimaryButton, TextInput } from "@Forms"
 
-	const username = ref("")
+	const username = ref("daniel")
 
 	const canJoin = computed<boolean>(() => {
 		return !!username.value
@@ -18,8 +18,6 @@
 	}
 
 	socket.on("joined", () => {
-		console.log("Joined!")
-
 		setUser({
 			username: username.value,
 			connected: true,
