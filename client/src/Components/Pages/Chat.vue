@@ -4,7 +4,6 @@
 	import useStore from "@Composables/useStore"
 	import gql from "graphql-tag"
 	import { useQuery } from "@vue/apollo-composable"
-	import { apiFetch } from "@Composables/useForm"
 	import { PrimaryButton, TextInput } from "@Forms"
 	import ChatBubble from "@Components/ChatBubble.vue"
 	import { IMessage, IMessageGroup } from "@/Interfaces"
@@ -50,17 +49,6 @@
 		} as IMessage
 
 		message.value = ""
-	}
-
-	const fetchChatHistory = async () => {
-		const response = await apiFetch("/messages")
-		messages.value = response
-		scrollToBottom()
-	}
-
-	const fetchUsers = async () => {
-		const response = await apiFetch("/users")
-		store.setConnectedUsers(response)
 	}
 
 	const { result } = useQuery(
