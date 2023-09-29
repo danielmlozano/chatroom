@@ -40,8 +40,11 @@ const getUser = async (socketId) => {
 
 const getUsers = async () => {
 	const users = await client.hGetAll(cacheName)
-
-	return users
+	const userList = Object.entries(users).map(([username, socketId]) => ({
+		username,
+		socketId,
+	}))
+	return userList
 }
 
 const generateUsername = async (username) => {
