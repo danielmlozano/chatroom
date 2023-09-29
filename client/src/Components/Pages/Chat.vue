@@ -31,7 +31,6 @@
 			username: user.value.username,
 		} as IMessage
 
-		pushMessage(newMessage)
 		message.value = ""
 	}
 
@@ -115,8 +114,7 @@
 <template>
 	<div class="flex">
 		<!-- Drawer here only on mobile -->
-
-		<div class="block lg:hidden fixed inset-0 z-50" v-show="drawerOpen">
+		<div class="block md:hidden fixed inset-0 z-50" v-show="drawerOpen">
 			<div class="absolute inset-0 bg-gray-900 opacity-75"></div>
 			<div class="fixed inset-y-0 right-0 max-w-full flex">
 				<div class="w-screen max-w-md">
@@ -170,10 +168,16 @@
 			</div>
 		</div>
 
-		<div class="hidden lg:block w-1/6">
+		<!-- Sidebar -->
+
+		<div class="hidden md:block md:w-2/6 lg:w-1/6">
 			<div class="flex flex-col justify-start h-screen py-5 px-5">
 				<h1 class="text-white text-xl text-center">ChatRoom</h1>
-				<div class="users mt-10">
+				<p class="text-white mt-2">
+					Welcome
+					<span class="text-blue-500">{{ user.username }}</span>
+				</p>
+				<div class="users mt-4">
 					<!-- List of connected users -->
 					<span class="text-white font-medium">Users online</span>
 					<ul class="mt-5">
@@ -201,10 +205,12 @@
 				</div>
 			</div>
 		</div>
-		<div class="w-full bg-white lg:w-5/6 pl-10 flex flex-col h-screen">
+		<div
+			class="w-full bg-white md:w-4/6 lg:w-5/6 pl-10 flex flex-col h-screen"
+		>
 			<!-- Burger button to open drawer only on mobile -->
 			<div
-				class="flex justify-between lg:hidden container mx-auto mb-10 items-center h-20"
+				class="flex justify-between md:hidden container mx-auto mb-10 items-center h-20"
 			>
 				<h1>ChatRoom</h1>
 				<button
