@@ -109,10 +109,68 @@
 			store.addConnectedUser(user)
 		})
 	})
+
+	const drawerOpen = ref<boolean>(false)
 </script>
 <template>
 	<div class="flex">
-		<div class="w-full lg:w-1/6">
+		<!-- Drawer here only on mobile -->
+
+		<div class="block lg:hidden fixed inset-0 z-50" v-show="drawerOpen">
+			<div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+			<div class="fixed inset-y-0 right-0 max-w-full flex">
+				<div class="w-screen max-w-md">
+					<div class="h-full flex flex-col bg-white shadow-xl">
+						<div
+							class="flex justify-between items-center px-6 py-4 bg-gray-900"
+						>
+							<h2 class="text-lg font-medium text-white">
+								Users online
+							</h2>
+							<button
+								type="button"
+								class="text-gray-500 hover:text-gray-400 focus:outline-none focus:text-gray-400"
+								@click="drawerOpen = false"
+							>
+								<svg
+									class="h-6 w-6 fill-current"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M18.2929 5.29289C18.6834 4.90237 19.3166 4.90237 19.7071 5.29289C20.0976 5.68342 20.0976 6.31658 19.7071 6.70711L13.4142 13L19.7071 19.2929C20.0976 19.6834 20.0976 20.3166 19.7071 20.7071C19.3166 21.0976 18.6834 21.0976 18.2929 20.7071L12 14.4142L5.70711 20.7071C5.31658 21.0976 4.68342 21.0976 4.29289 20.7071C3.90237 20.3166 3.90237 19.6834 4.29289 19.2929L10.5858 13L4.29289 6.70711C3.90237 6.31658 3.90237 5.68342 4.29289 5.29289C4.68342 4.90237 5.31658 4.90237 5.70711 5.29289L12 11.5858L18.2929 5.29289Z"
+									/>
+								</svg>
+							</button>
+						</div>
+						<div class="flex-1 overflow-y-auto">
+							<ul class="px-4 py-6">
+								<li
+									v-for="(user, i) in connectedUsers"
+									:key="i"
+									class="flex items-center py-2"
+								>
+									<div class="flex-shrink-0">
+										<span
+											class="inline-block h-2 w-2 rounded-full bg-green-400"
+										></span>
+									</div>
+									<div class="ml-3">
+										<p
+											class="text-sm font-medium text-gray-900"
+										>
+											{{ user.username }}
+										</p>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="hidden lg:block w-1/6">
 			<div class="flex flex-col justify-start h-screen py-5 px-5">
 				<h1 class="text-white text-xl text-center">ChatRoom</h1>
 				<div class="users mt-10">
@@ -144,7 +202,35 @@
 			</div>
 		</div>
 		<div class="w-full bg-white lg:w-5/6 pl-10 flex flex-col h-screen">
-			<div class="flex-col max-h-full grow overflow-y-scroll" id="chat">
+			<!-- Burger button to open drawer only on mobile -->
+			<div
+				class="flex justify-between lg:hidden container mx-auto mb-10 items-center h-20"
+			>
+				<h1>ChatRoom</h1>
+				<button
+					type="button"
+					class="text-gray-500 hover:text-gray-400 focus:outline-none focus:text-gray-400 mr-10"
+					@click="drawerOpen = !drawerOpen"
+				>
+					<svg
+						class="h-6 w-6 fill-current"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							d="M4 6H20M4 12H20M4 18H11"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</button>
+			</div>
+			<div
+				class="flex-col max-h-full grow overflow-y-scroll mx-5"
+				id="chat"
+			>
 				<div
 					v-for="(group, i) in messages"
 					:key="i"
