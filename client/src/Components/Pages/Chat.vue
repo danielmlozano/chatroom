@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { onMounted, ref, nextTick, computed } from "vue"
+	import { onMounted, ref, nextTick, computed, watch } from "vue"
 	import { storeToRefs } from "pinia"
 	import useStore from "@Composables/useStore"
 	import { apiFetch } from "@Composables/useForm"
@@ -119,6 +119,15 @@
 		}
 		scrollToBottom()
 	}
+
+	watch(
+		() => searchResults.value,
+		() => {
+			if (searchResults.value.length > 0) {
+				scrollToMessage(searchResults.value[0])
+			}
+		},
+	)
 
 	onMounted(() => {
 		fetchChatHistory()
