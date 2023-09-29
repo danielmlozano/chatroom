@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { onMounted, ref, nextTick, watch } from "vue"
+	import { onMounted, ref, nextTick, computed, watch } from "vue"
 	import { storeToRefs } from "pinia"
 	import useStore from "@Composables/useStore"
 	import gql from "graphql-tag"
@@ -9,14 +9,21 @@
 	import { IMessage, IMessageGroup } from "@/Interfaces"
 	import UploadImage from "@Components/UploadImage.vue"
 	import { cloneDeep } from "lodash"
+	import SearchMessage from "@Components/SearchMessage.vue"
+	import Sidebar from "@Components/Sidebar.vue"
+	import SearchResults from "@Components/SearchResults.vue"
 
 	const store = useStore()
 
-	const { user, connectedUsers } = storeToRefs(store)
+	const { user, searchResults } = storeToRefs(store)
 
 	const message = ref<string>("")
 
 	const messages = ref<IMessageGroup[]>([])
+
+	const showSearchResultsNavigator = computed<boolean>(() => {
+		return searchResults.value.length > 0
+	})
 
 	const sendMessage = () => {
 		if (!message.value) {
@@ -107,6 +114,39 @@
 		scrollToBottom()
 	}
 
+	const scrollToMessage = (message: IMessage) => {
+		const messageId = message._id as string
+		const elMessage = document.getElementById(messageId)
+		if (elMessage !== null) {
+			const previousResult =
+				document.getElementsByClassName("bg-yellow-100")
+			if (previousResult.length > 0) {
+				previousResult[0].classList.remove("bg-yellow-100")
+			}
+			elMessage.scrollIntoView({ behavior: "smooth" })
+			elMessage.classList.add("bg-yellow-100")
+		}
+	}
+
+	const clearSearch = () => {
+		store.clearSearchResults()
+		const elMessage = document.getElementsByClassName("bg-yellow-100")
+		if (elMessage.length > 0) {
+			elMessage[0].classList.remove("bg-yellow-100")
+		}
+		scrollToBottom()
+	}
+
+	watch(
+		() => searchResults.value,
+		() => {
+			if (searchResults.value.length > 0) {
+				scrollToMessage(searchResults.value[0])
+				drawerOpen.value = false
+			}
+		},
+	)
+
 	onMounted(() => {
 		store.socket.on("newMessage", (data) => {
 			const message: IMessage = data
@@ -132,13 +172,13 @@
 			<div class="absolute inset-0 bg-gray-900 opacity-75"></div>
 			<div class="fixed inset-y-0 right-0 max-w-full flex">
 				<div class="w-screen max-w-md">
-					<div class="h-full flex flex-col bg-white shadow-xl">
+					<div class="h-full flex flex-col bg-primary shadow-xl">
 						<div
-							class="flex justify-between items-center px-6 py-4 bg-gray-900"
+							class="flex justify-between items-center lg:px-6 py-4 bg-white px-5"
 						>
-							<h2 class="text-lg font-medium text-white">
-								Users online
-							</h2>
+							<span class="text-gray-800 font-bold text-xl">
+								ChatRoom
+							</span>
 							<button
 								type="button"
 								class="text-gray-500 hover:text-gray-400 focus:outline-none focus:text-gray-400"
@@ -155,27 +195,9 @@
 								</svg>
 							</button>
 						</div>
-						<div class="flex-1 overflow-y-auto">
-							<ul class="px-4 py-6">
-								<li
-									v-for="(user, i) in connectedUsers"
-									:key="i"
-									class="flex items-center py-2"
-								>
-									<div class="flex-shrink-0">
-										<span
-											class="inline-block h-2 w-2 rounded-full bg-green-400"
-										></span>
-									</div>
-									<div class="ml-3">
-										<p
-											class="text-sm font-medium text-gray-900"
-										>
-											{{ user.username }}
-										</p>
-									</div>
-								</li>
-							</ul>
+						<div class="flex-1 overflow-y-auto px-5">
+							<SearchMessage />
+							<Sidebar />
 						</div>
 					</div>
 				</div>
@@ -191,40 +213,18 @@
 					Welcome
 					<span class="text-blue-500">{{ user.username }}</span>
 				</p>
-				<div class="users mt-4">
-					<!-- List of connected users -->
-					<span class="text-white font-medium">Users online</span>
-					<ul class="mt-5">
-						<li
-							v-for="(user, i) in connectedUsers"
-							:key="i"
-							class="w-full mb-1"
-						>
-							<div class="flex items-center py-2 px-3">
-								<div class="flex-shrink-0">
-									<span
-										class="inline-block h-2 w-2 rounded-full bg-green-400"
-									></span>
-								</div>
-								<div class="ml-3">
-									<p
-										class="text-sm font-medium text-gray-200"
-									>
-										{{ user.username }}
-									</p>
-								</div>
-							</div>
-						</li>
-					</ul>
-				</div>
+				<!-- Search -->
+				<SearchMessage />
+				<Sidebar />
 			</div>
 		</div>
+
 		<div
 			class="w-full bg-white md:w-4/6 lg:w-5/6 pl-10 flex flex-col h-screen"
 		>
 			<!-- Burger button to open drawer only on mobile -->
 			<div
-				class="flex justify-between md:hidden container mx-auto mb-10 items-center h-20"
+				class="flex justify-between md:hidden container mx-auto mb-10 items-center h-20 py-5"
 			>
 				<h1>ChatRoom</h1>
 				<button
@@ -247,10 +247,19 @@
 					</svg>
 				</button>
 			</div>
+
+			<!-- Chat Viewport -->
 			<div
-				class="flex-col max-h-full grow overflow-y-scroll mx-5"
+				class="flex-col max-h-full grow overflow-y-scroll lg:mx-5"
 				id="chat"
 			>
+				<!-- Search results navigator (like messenger or whatsapp: message 1 of 3)-->
+				<SearchResults
+					v-if="showSearchResultsNavigator"
+					@go-to="scrollToMessage"
+					@clear="clearSearch"
+					class="fixed top bg-gray-100 p-5 rounded-md left-auto right-auto"
+				/>
 				<div
 					v-for="(group, i) in messages"
 					:key="i"
@@ -264,7 +273,8 @@
 					<div
 						v-for="(message, i) in group.messages"
 						:key="i"
-						class="flex mb-2 w-full py-5"
+						class="flex mb-2 w-full py-5 message-item"
+						:id="message._id"
 					>
 						<ChatBubble :message="message" />
 					</div>

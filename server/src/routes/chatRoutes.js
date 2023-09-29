@@ -8,13 +8,11 @@ const setChatRoutes = (app) => {
 
 	app.use("/api/messages", router)
 
-	router.get("/", (req, res) => {
-		chats.index(req, res)
-	})
+	router.get("/", chats.index)
 
-	router.post("/", (req, res) => {
-		chats.store(req, res)
-	})
+	router.get("/search", chats.search)
+
+	router.post("/", chats.store)
 
 	router.post("/upload", upload.single("file"), chats.upload)
 }

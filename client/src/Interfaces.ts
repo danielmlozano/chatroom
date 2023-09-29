@@ -1,5 +1,5 @@
 interface IMessage {
-	id: string
+	_id?: string
 	username: string
 	message: string
 	fileUrl?: string

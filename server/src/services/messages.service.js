@@ -75,8 +75,16 @@ const groupMessagesByDay = (messages) => {
 	return result
 }
 
+const searchMessages = async (query) => {
+	const messages = await Message.find({
+		message: { $eq: query },
+	}).sort({ createdAt: 1 })
+	return messages
+}
+
 module.exports = {
 	createMessage,
 	getMessages,
+	searchMessages,
 	groupMessagesByDay,
 }
