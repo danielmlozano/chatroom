@@ -1,10 +1,10 @@
 <script setup lang="ts">
-	import { onMounted, ref } from "vue"
+	import { onMounted, ref, nextTick } from "vue"
 	import useStore from "@Composables/useStore"
 	import { apiFetch } from "@Composables/useForm"
 	import { PrimaryButton, TextInput } from "@Forms"
 	import ChatBubble from "@Components/ChatBubble.vue"
-	import { IMessageGroup } from "@/Interfaces"
+	import { IMessage, IMessageGroup } from "@/Interfaces"
 
 	const { socket, user } = useStore()
 
@@ -16,6 +16,29 @@
 		}
 
 		socket.emit("messageSent", JSON.stringify({ message: message.value }))
+
+		// Push the message to the message group of Today to the array
+		const todayGroup = messages.value.find(
+			(group) => group.date === "Today",
+		)
+
+		if (!todayGroup) {
+			messages.value.push({
+				date: "Today",
+				messages: [],
+			})
+		}
+
+		messages.value
+			.find((group) => group.date === "Today")
+			?.messages.push({
+				message: message.value,
+				username: user.username,
+			} as IMessage)
+
+		message.value = ""
+
+		scrollToBottom()
 	}
 
 	const messages = ref<IMessageGroup[]>([])
@@ -23,6 +46,15 @@
 	const fetchChatHistory = async () => {
 		const response = await apiFetch("/messages")
 		messages.value = response
+		scrollToBottom()
+	}
+
+	const scrollToBottom = async () => {
+		await nextTick()
+		const chat = document.getElementById("chat")
+		if (chat !== null) {
+			chat.scrollTop = chat.scrollHeight
+		}
 	}
 
 	onMounted(() => {
@@ -37,7 +69,7 @@
 			></div>
 		</div>
 		<div class="w-full bg-white lg:w-5/6 pl-10 flex flex-col h-screen">
-			<div class="flex-col max-h-full grow overflow-y-scroll">
+			<div class="flex-col max-h-full grow overflow-y-scroll" id="chat">
 				<div
 					v-for="(group, i) in messages"
 					:key="i"
