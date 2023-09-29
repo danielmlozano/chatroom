@@ -1,0 +1,29 @@
+type Query {
+	messages: [MessageGroup!]!
+	users: [User!]!
+}
+
+# type Mutation {
+# 	login(email: String!, password: String!): AuthResponse!
+# 	addProduct(input: CreateProductInput!): Product!
+# 	updateProduct(id: ID!, input: UpdateProductInput!): Product
+# 	deleteProduct(id: ID!): ID
+# }
+
+type Message {
+	_id: ID!
+	username: String!
+	message: String
+	fileUrl: String
+	fileMimeType: String
+}
+
+type MessageGroup {
+	date: String!
+	messages: [Message!]!
+}
+
+type User {
+	username: String!
+	tokenId: String
+}
